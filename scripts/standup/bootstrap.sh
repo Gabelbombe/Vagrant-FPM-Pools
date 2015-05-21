@@ -8,8 +8,6 @@ export DEBIAN_FRONTEND=noninteractive
 export APPDIR=/var/www/html
 export HTDOCS=/vagrant/httpdocs
 
-export NUKE=$1
-
 
 # Update Apache 2.4
 # --------------------
