@@ -111,6 +111,6 @@ source /etc/apache2/envvars
 # --------------------
 apt-get install -y php5-fpm
 sed -i -e 's/www-data/vagrant/g'                        /etc/php5/fpm/pool.d/www.conf
-sed -i -e 's~/var/run/php5-fpm.sock~127.0.0.1:9000/g'   /etc/php5/fpm/pool.d/www.conf
+sed -i -e 's~/var/run/php5-fpm.sock~127.0.0.1:9000~g'   /etc/php5/fpm/pool.d/www.conf
 
 service php-fpm restart
