@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 require 'shellwords'
 
-nuke = "true"
+nuke = "false"
 
 def bash(command)
   escaped_command = Shellwords.escape(command)
@@ -19,9 +19,10 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "pools.io"
 
   ## Standup scripts...
-  config.vm.provision :shell, :path => "scripts/mute_ssh.sh"
-  config.vm.provision :shell, :path => "scripts/bootstrap.sh"
-  config.vm.provision :shell, :path => "scripts/binary.sh"
+  config.vm.provision :shell, :path => "scripts/standup/mute_ssh.sh"
+  config.vm.provision :shell, :path => "scripts/standup/bootstrap.sh",
+                      :args => [nuke]
+
 
   # Visit the site at http://192.168.50.66
   config.vm.network :private_network, ip: "192.168.50.31"
