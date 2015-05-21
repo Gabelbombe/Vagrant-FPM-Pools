@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 touch /home/vagrant/.ssh/config
 chown vagrant:vagrant /home/vagrant/.ssh/config
