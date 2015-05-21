@@ -3,8 +3,7 @@
 
 # Define envvars
 # --------------------
-export APPDIR=/var/www/html/w
-export APPINI=/var/www/html/ini
+export APPDIR=/var/www/html
 export HTDOCS=/vagrant/httpdocs
 
 export NUKE=$1
@@ -23,17 +22,15 @@ apt-get install -y apache2
 
 
 # Nuke and pave...
+# Delete default apache web dir and symlink mounted vagrant dir from host machine
 # --------------------
-[[ 'true' == $nuke ]] && {
-  # Delete default apache web dir and symlink mounted vagrant dir from host machine
-  # --------------------
-  rm -rf   $HTDOCS /var/www/html
-  mkdir -p $HTDOCS
+rm -rf   $HTDOCS $APPDIR
+mkdir -p $HTDOCS
 
-  # Symlink back across
-  # --------------------
-  ln -fs $HTDOCS/ /var/www/html
-}
+
+# Symlink back across
+# --------------------
+ln -fs $HTDOCS $APPDIR
 
 
 ## Add Vagrant as the default Apache Config User/Group
@@ -64,8 +61,8 @@ Listen 8080
     Require all granted
   </Directory>
 
-  ErrorLog ${APACHE_LOG_DIR}/error.log
-  CustomLog ${APACHE_LOG_DIR}/access.log combined
+  ErrorLog \${APACHE_LOG_DIR}/error.log
+  CustomLog \${APACHE_LOG_DIR}/access.log combined
 
 </VirtualHost>
 
@@ -88,8 +85,8 @@ Listen 8080
     Require all granted
   </Directory>
 
-  ErrorLog ${APACHE_LOG_DIR}/error.log
-  CustomLog ${APACHE_LOG_DIR}/access.log combined
+  ErrorLog \${APACHE_LOG_DIR}/error.log
+  CustomLog \${APACHE_LOG_DIR}/access.log combined
 
 </VirtualHost>
 EOF
@@ -98,7 +95,7 @@ EOF
 
 echo "$VHOST" > /etc/apache2/sites-enabled/000-default.conf
 
-# Enable mod_proxy_fcgi and mod_rewrite
+# Enable modules
 # --------------------
 a2enmod proxy_fcgi
 a2enmod rewrite
@@ -108,3 +105,12 @@ service apache2 restart
 
 ## per http://serverfault.com/questions/558283/apache2-config-variable-is-not-defined
 source /etc/apache2/envvars
+
+
+# Install PHP FastCGI Process Manager
+# --------------------
+apt-get install -y php5-fpm
+sed -i -e 's/www-data/vagrant/g'                        /etc/php5/fpm/pool.d/www.conf
+sed -i -e 's~/var/run/php5-fpm.sock~127.0.0.1:9000/g'   /etc/php5/fpm/pool.d/www.conf
+
+service php-fpm restart
